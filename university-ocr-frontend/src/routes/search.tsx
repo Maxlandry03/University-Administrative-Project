@@ -1,11 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { files, statusLabel, statusClasses } from "@/lib/mock-data";
-import { Search as SearchIcon } from "lucide-react";
+import { type TrackedFile, statusLabel, statusClasses } from "@/lib/mock-data";
+import { getSession } from "@/lib/session";
+import { toast } from "sonner";
+import { Loader2, Search as SearchIcon } from "lucide-react";
 
 export const Route = createFileRoute("/search")({
   head: () => ({ meta: [{ title: "Search — UniTrack OCR" }] }),
@@ -20,16 +22,54 @@ function highlight(text: string, q: string) {
 }
 
 function SearchPage() {
-  const [q, setQ] = useState("transcript");
-  const results = q ? files.filter((f) =>
-    `${f.title} ${f.reference} ${f.ocrText} ${f.submittedBy}`.toLowerCase().includes(q.toLowerCase())
-  ) : [];
+  const navigate = useNavigate();
+  const [q, setQ] = useState("");
+  const [results, setResults] = useState<TrackedFile[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const session = getSession();
+    if (!session) {
+      navigate({ to: "/auth" });
+      return;
+    }
+
+    if (!q.trim()) {
+      setResults([]);
+      return;
+    }
+
+    const search = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`http://localhost:8000/api/search?q=${encodeURIComponent(q)}`, {
+          headers: {
+            Authorization: `Bearer ${session.token}`,
+            Accept: "application/json",
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setResults(data);
+        } else {
+          toast.error("Search failed.");
+        }
+      } catch (error) {
+        toast.error("Could not connect to the server for search.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const debounce = setTimeout(() => search(), 300);
+    return () => clearTimeout(debounce);
+  }, [q, navigate]);
 
   return (
     <AppShell title="Search" subtitle="Full-text search across documents using OCR-extracted content">
       <Card className="p-4">
         <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          {loading ? <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground animate-spin" /> : <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />}
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search inside documents…" className="pl-9 h-11" />
         </div>
         <div className="text-xs text-muted-foreground mt-2">{results.length} result{results.length === 1 ? "" : "s"}</div>
@@ -37,7 +77,10 @@ function SearchPage() {
 
       <div className="mt-4 space-y-3">
         {results.map((f) => {
-          const text = f.ocrText.split("\n").find((l) => l.toLowerCase().includes(q.toLowerCase())) ?? f.ocrText.split("\n")[0];
+          const text =
+  f.content?.split("\n").find((l) => l.toLowerCase().includes(q.toLowerCase())) ??
+  f.content?.split("\n")[0] ??
+  "No content available";
           return (
             <Card key={f.id} className="p-4 hover:shadow-md transition">
               <Link to="/tracking/$id" params={{ id: f.id }} className="block">

@@ -59,7 +59,7 @@ function AppSidebar({ session }: { session: Session }) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-          {admin.length > 0 && (
+        {admin.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>Administration</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -100,12 +100,18 @@ function AppSidebar({ session }: { session: Session }) {
 export function AppShell({ title, subtitle, actions, children }: { title: string; subtitle?: string; actions?: ReactNode; children: ReactNode }) {
   const navigate = useNavigate();
   const [session, setSessionState] = useState<Session | null>(null);
+
   useEffect(() => {
     const s = getSession();
     if (!s) navigate({ to: "/auth" });
     else setSessionState(s);
-  }, [navigate]);
+    // Runs once on mount only — `navigate` is intentionally excluded
+    // because including it caused an infinite re-render/fetch loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (!session) return null;
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">

@@ -15,19 +15,54 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("marc@univ.edu");
-  const [password, setPassword] = useState("demo1234");
+  const [email, setEmail] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("Department Administrator");
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSession({
-      name: email.split("@")[0].replace(/\b\w/g, (c) => c.toUpperCase()),
-      email,
-      role,
-      department: role === "Student" ? "—" : "Registrar",
-    });
-    navigate({ to: "/dashboard" });
+
+    const payload = role === "Student"
+      ? { email, student_id: studentId, role }
+      : { email, password, role };
+
+    try {
+      const response = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        // You can use a toast notification here to show the error
+        alert(errorData.message || "Login failed");
+        return;
+      }
+const data = await response.json();
+
+console.log("Login response:", data);
+
+const { user, access_token, student_id } = data;
+
+// Store the session and token
+setSession({
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  department: user.department,
+  student_id: student_id,
+  token: access_token,
+});
+      navigate({ to: "/dashboard" });
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login.");
+    }
   };
 
   return (
@@ -64,14 +99,29 @@ function AuthPage() {
             Use your university credentials to access the system.
           </p>
           <form onSubmit={submit} className="mt-6 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pw">Password</Label>
-              <Input id="pw" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </div>
+            {role === "Student" ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="studentId">Student ID</Label>
+                  <Input id="studentId" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Student Email</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pw">Password</Label>
+                  <Input id="pw" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                </div>
+              </>
+            )}
             <div className="space-y-2">
               <Label>Sign in as</Label>
               <Select value={role} onValueChange={(v) => setRole(v as Role)}>
@@ -79,15 +129,11 @@ function AuthPage() {
                 <SelectContent>
                   <SelectItem value="Super Administrator">Super Administrator</SelectItem>
                   <SelectItem value="Department Administrator">Department Administrator</SelectItem>
-                  <SelectItem value="Staff">Staff / User</SelectItem>
                   <SelectItem value="Student">Student</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <Button type="submit" className="w-full">Sign in</Button>
-            <p className="text-xs text-muted-foreground text-center">
-              Demo only — any credentials work.
-            </p>
           </form>
         </Card>
       </div>

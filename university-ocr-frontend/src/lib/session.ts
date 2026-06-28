@@ -1,4 +1,4 @@
-export type Role = "Super Administrator" | "Department Administrator" | "Staff" | "Student";
+export type Role = "Super Administrator" | "Department Administrator" | "Student";
 
 const KEY = "uoft.session";
 
@@ -7,11 +7,25 @@ export interface Session {
   email: string;
   role: Role;
   department: string;
+  token: string;
+  student_id?: string;
 }
 
 export function getSession(): Session | null {
   if (typeof window === "undefined") return null;
-  try { const v = localStorage.getItem(KEY); return v ? JSON.parse(v) : null; } catch { return null; }
+
+  try {
+    const v = localStorage.getItem(KEY);
+    return v ? JSON.parse(v) : null;
+  } catch {
+    return null;
+  }
 }
-export function setSession(s: Session) { localStorage.setItem(KEY, JSON.stringify(s)); }
-export function clearSession() { localStorage.removeItem(KEY); }
+
+export function setSession(s: Session) {
+  localStorage.setItem(KEY, JSON.stringify(s));
+}
+
+export function clearSession() {
+  localStorage.removeItem(KEY);
+}

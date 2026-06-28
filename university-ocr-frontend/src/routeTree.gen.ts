@@ -20,6 +20,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrackingIdRouteImport } from './routes/tracking.$id'
+import { Route as FileIdRouteImport } from './routes/file.$id'
 
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
@@ -76,6 +77,11 @@ const TrackingIdRoute = TrackingIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => TrackingRoute,
 } as any)
+const FileIdRoute = FileIdRouteImport.update({
+  id: '/file/$id',
+  path: '/file/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/tracking': typeof TrackingRouteWithChildren
   '/upload': typeof UploadRoute
   '/users': typeof UsersRoute
+  '/file/$id': typeof FileIdRoute
   '/tracking/$id': typeof TrackingIdRoute
 }
 export interface FileRoutesByTo {
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/tracking': typeof TrackingRouteWithChildren
   '/upload': typeof UploadRoute
   '/users': typeof UsersRoute
+  '/file/$id': typeof FileIdRoute
   '/tracking/$id': typeof TrackingIdRoute
 }
 export interface FileRoutesById {
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/tracking': typeof TrackingRouteWithChildren
   '/upload': typeof UploadRoute
   '/users': typeof UsersRoute
+  '/file/$id': typeof FileIdRoute
   '/tracking/$id': typeof TrackingIdRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/tracking'
     | '/upload'
     | '/users'
+    | '/file/$id'
     | '/tracking/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/tracking'
     | '/upload'
     | '/users'
+    | '/file/$id'
     | '/tracking/$id'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/tracking'
     | '/upload'
     | '/users'
+    | '/file/$id'
     | '/tracking/$id'
   fileRoutesById: FileRoutesById
 }
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   TrackingRoute: typeof TrackingRouteWithChildren
   UploadRoute: typeof UploadRoute
   UsersRoute: typeof UsersRoute
+  FileIdRoute: typeof FileIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackingIdRouteImport
       parentRoute: typeof TrackingRoute
     }
+    '/file/$id': {
+      id: '/file/$id'
+      path: '/file/$id'
+      fullPath: '/file/$id'
+      preLoaderRoute: typeof FileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -277,6 +297,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrackingRoute: TrackingRouteWithChildren,
   UploadRoute: UploadRoute,
   UsersRoute: UsersRoute,
+  FileIdRoute: FileIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

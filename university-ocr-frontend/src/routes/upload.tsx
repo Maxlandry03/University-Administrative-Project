@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { departments, SAMPLE_OCR } from "@/lib/mock-data";
 import { CloudUpload, FileScan, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
+import { getSession } from "@/lib/session";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/upload")({
   head: () => ({ meta: [{ title: "Upload Document — UniTrack OCR" }] }),
@@ -26,6 +28,8 @@ function UploadPage() {
   const [dept, setDept] = useState(departments[0]);
   const [scanning, setScanning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [notes, setNotes] = useState("");
+const navigate = useNavigate();
 
   const handleFile = (f: File) => {
     setFile(f);
@@ -37,7 +41,7 @@ function UploadPage() {
         if (p >= 100) {
           clearInterval(i);
           setScanning(false);
-          setOcr(SAMPLE_OCR);
+          
           return 100;
         }
         return p + 8;
@@ -45,11 +49,62 @@ function UploadPage() {
     }, 120);
   };
 
-  const submit = () => {
-    if (!file) return toast.error("Please upload a document first");
-    toast.success("Document submitted for processing", { description: "A new file reference has been created." });
-    setFile(null); setOcr(""); setProgress(0);
-  };
+const submit = async () => {
+  if (!file) {
+    toast.error("Please upload a document first");
+    return;
+  }
+
+  const session = getSession();
+  console.log(getSession());
+  console.log(getSession()?.token);
+  console.log("session.student_id:", session?.student_id); // ← add this line
+
+  if (!session) {
+    toast.error("Please login again.");
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append("student_id", session.student_id ?? "");
+  formData.append("title", type);
+  formData.append("description", notes);
+  formData.append("destination_department", dept);
+  formData.append("file", file);
+
+  try {
+    const response = await fetch("http://localhost:8000/api/files", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.token}`,
+        Accept: "application/json",
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.message || "Upload failed.");
+      return;
+    }
+    setOcr(data.file.content || "");
+
+    toast.success("Document submitted successfully!");
+
+    setFile(null);
+    setOcr("");
+    setProgress(0);
+    setNotes("");
+
+    navigate({ to: "/dashboard" });
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Unable to connect to the server.");
+  }
+};
 
   return (
     <AppShell title="Upload Document" subtitle="Upload PDFs or scanned images for OCR processing and classification">
@@ -122,7 +177,12 @@ function UploadPage() {
             </div>
             <div className="space-y-2">
               <Label>Notes</Label>
-              <Textarea placeholder="Add any context for reviewers…" rows={3} />
+              <Textarea
+  value={notes}
+  onChange={(e) => setNotes(e.target.value)}
+  placeholder="Add any context for reviewers…"
+  rows={3}
+/>
             </div>
             <Button className="w-full" onClick={submit}>Submit for processing</Button>
           </div>

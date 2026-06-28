@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { files, statusLabel, statusClasses, departments } from "@/lib/mock-data";
+import { statusLabel, statusClasses, departments, type TrackedFile } from "@/lib/mock-data";
+import { getSession } from "@/lib/session";
+import { toast } from "sonner";
 import { Search as SearchIcon } from "lucide-react";
 
 export const Route = createFileRoute("/files")({
@@ -16,9 +18,36 @@ export const Route = createFileRoute("/files")({
 });
 
 function FilesPage() {
+  const navigate = useNavigate();
+  const [files, setFiles] = useState<TrackedFile[]>([]);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
   const [dept, setDept] = useState("all");
+
+  useEffect(() => {
+    const session = getSession();
+    if (!session) {
+      navigate({ to: "/auth" });
+      return;
+    }
+
+    const fetchFiles = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/files", {
+          headers: {
+            Authorization: `Bearer ${session.token}`,
+            Accept: "application/json",
+          },
+        });
+        const data = await response.json();
+        if (response.ok) setFiles(data);
+      } catch (error) {
+        toast.error("Failed to fetch files.");
+      }
+    };
+
+    fetchFiles();
+  }, [navigate]);
 
   const filtered = files.filter((f) => {
     if (status !== "all" && f.status !== status) return false;
