@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create a dedicated Axios instance for your API
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000', // Your Laravel backend URL
+  baseURL: '${import.meta.env.VITE_API_URL}', // Your Laravel backend URL
   withCredentials: true, // This is CRITICAL for sending cookies
 });
 
