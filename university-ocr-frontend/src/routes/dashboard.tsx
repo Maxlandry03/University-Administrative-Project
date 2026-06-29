@@ -115,7 +115,7 @@ try{
 
 
 const res = await fetch(
-`http://localhost:8000/api/files/${fileId}/status`,
+`${import.meta.env.VITE_API_URL}/api/files/${fileId}/status`,
 {
 
 method:"PUT",
@@ -228,7 +228,7 @@ if(!session)return;
 
 
 fetch(
-"http://localhost:8000/api/files",
+"${import.meta.env.VITE_API_URL}/api/files",
 {
 
 headers:{
