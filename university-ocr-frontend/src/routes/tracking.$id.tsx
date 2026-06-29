@@ -29,7 +29,7 @@ function TrackingDetail() {
 
     const fetchFile = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/files", {
+        const res = await fetch("${import.meta.env.VITE_API_URL}/api/files", {
           headers: {
             Authorization: `Bearer ${session.token}`,
             Accept: "application/json",
