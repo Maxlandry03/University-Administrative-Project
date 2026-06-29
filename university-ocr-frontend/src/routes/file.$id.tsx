@@ -24,7 +24,7 @@ const session=getSession();
 
 
 fetch(
-`http://localhost:8000/api/files/${id}`,
+`${import.meta.env.VITE_API_URL}/api/files/${id}`,
 {
 
 headers:{
