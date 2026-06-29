@@ -1,0 +1,9 @@
+import { d as e, i as t, p as n } from "./useNavigate-BLdqxhW4.js";
+import { n as r } from "./index-DABswBc8.js";
+import { r as i, t as a } from "./card-BvHXjDW2.js";
+var o = n(e()),
+    s = t();
+
+function c() { let { id: e } = r.useParams(), [t, n] = (0, o.useState)(null); return (0, o.useEffect)(() => { let t = i();
+        fetch(`${import.meta.env.VITE_API_URL}/api/files/${e}`, { headers: { Authorization: `Bearer ${t?.token}`, Accept: `application/json` } }).then(e => e.json()).then(e => n(e)) }, [e]), t ? (0, s.jsx)(`div`, { className: `p-6`, children: (0, s.jsxs)(a, { className: `p-6`, children: [(0, s.jsx)(`h1`, { className: `text-xl font-bold`, children: t.title }), (0, s.jsxs)(`p`, { className: `text-sm text-muted-foreground`, children: [`Department: `, t.department] }), t.description && (0, s.jsxs)(`div`, { className: `mt-4 p-4 border rounded bg-muted/20`, children: [(0, s.jsx)(`h2`, { className: `font-semibold`, children: `Description` }), (0, s.jsx)(`p`, { className: `mt-2 text-sm text-muted-foreground whitespace-pre-line`, children: t.description })] }), (0, s.jsxs)(`p`, { className: `mt-2`, children: [`Status: `, t.status] }), t.status === `Rejected` && (0, s.jsxs)(`div`, { className: `mt-4 p-4 border rounded bg-red-50`, children: [(0, s.jsx)(`h2`, { className: `font-semibold text-red-600`, children: `Rejection Reason` }), (0, s.jsx)(`p`, { className: `mt-2 text-sm`, children: t.rejection_reason || `No reason provided` })] }), (0, s.jsx)(`hr`, { className: `my-4` }), (0, s.jsx)(`h2`, { className: `font-semibold`, children: `OCR Content` }), (0, s.jsx)(`div`, { className: `mt-3 p-4 border rounded`, children: t.content || `No OCR content found` })] }) }) : (0, s.jsx)(`p`, { children: `Loading...` }) }
+export { c as component };

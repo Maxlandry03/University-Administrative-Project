@@ -25,7 +25,7 @@ function TrackingIndex() {
 
     const fetchFiles = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/files", {
+        const response = await fetch("${import.meta.env.VITE_API_URL}/api/files", {
           headers: {
             Authorization: `Bearer ${session.token}`,
             Accept: "application/json",

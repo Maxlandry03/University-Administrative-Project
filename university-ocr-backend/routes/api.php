@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 Route::post('/login', [AuthController::class, 'login']);
 
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
      

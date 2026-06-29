@@ -1,0 +1,17 @@
+import { d as e, i as t, p as n, t as r } from "./useNavigate-BLdqxhW4.js";
+import { t as i } from "./app-shell-Ca9mn3jJ.js";
+import { r as a, t as o } from "./index-DABswBc8.js";
+import { N as s, T as c } from "./dist-DMoWrB0s.js";
+import { t as l } from "./clock-BuCmUqy5.js";
+import { r as u, t as d } from "./card-BvHXjDW2.js";
+import { t as f } from "./badge-BZ5bHvJD.js";
+var p = s(`arrow-left`, [
+        [`path`, { d: `m12 19-7-7 7-7`, key: `1l729n` }],
+        [`path`, { d: `M19 12H5`, key: `x3x0zl` }]
+    ]),
+    m = n(e()),
+    h = t();
+
+function g() { let { id: e } = o.useParams(), t = r(), [n, s] = (0, m.useState)(null), [g, _] = (0, m.useState)(!0); return (0, m.useEffect)(() => { let n = u(); if (!n) { t({ to: `/auth` }); return }(async() => { try { let t = (await (await fetch(`${import.meta.env.VITE_API_URL}/api/files`, { headers: { Authorization: `Bearer ${n.token}`, Accept: `application/json` } })).json()).find(t => String(t.id) === e); if (!t) { a.error(`File not found`); return }
+                s(t) } catch { a.error(`Failed to load tracking data`) } finally { _(!1) } })() }, [e, t]), g ? (0, h.jsx)(`div`, { className: `p-10`, children: `Loading...` }) : n ? (0, h.jsx)(i, { title: n.title, subtitle: `${n.reference} · ${n.department}`, actions: (0, h.jsxs)(c, { variant: `outline`, size: `sm`, onClick: () => t({ to: `/files` }), children: [(0, h.jsx)(p, { className: `size-4 mr-1` }), `Back`] }), children: (0, h.jsxs)(`div`, { className: `grid gap-4 lg:grid-cols-3`, children: [(0, h.jsxs)(d, { className: `p-5 lg:col-span-2`, children: [(0, h.jsxs)(`h2`, { className: `font-semibold flex items-center gap-2`, children: [(0, h.jsx)(l, { className: `size-4` }), `Tracking Timeline`] }), (0, h.jsxs)(`ol`, { className: `mt-5 space-y-4 border-l pl-6`, children: [(0, h.jsxs)(`li`, { children: [(0, h.jsx)(`div`, { className: `text-sm font-medium`, children: `File Submitted` }), (0, h.jsx)(`div`, { className: `text-xs text-muted-foreground`, children: `Initial upload to system` })] }), (0, h.jsxs)(`li`, { children: [(0, h.jsx)(`div`, { className: `text-sm font-medium`, children: `Current Department` }), (0, h.jsx)(`div`, { className: `text-xs text-muted-foreground`, children: n.department })] }), (0, h.jsxs)(`li`, { children: [(0, h.jsx)(`div`, { className: `text-sm font-medium`, children: `Status` }), (0, h.jsx)(f, { children: n.status })] })] })] }), (0, h.jsxs)(d, { className: `p-5`, children: [(0, h.jsx)(`h2`, { className: `font-semibold`, children: `Details` }), (0, h.jsxs)(`div`, { className: `mt-3 text-sm space-y-2`, children: [(0, h.jsxs)(`div`, { children: [(0, h.jsx)(`span`, { className: `text-muted-foreground`, children: `Reference:` }), ` `, n.reference] }), (0, h.jsxs)(`div`, { children: [(0, h.jsx)(`span`, { className: `text-muted-foreground`, children: `Title:` }), ` `, n.title] }), (0, h.jsxs)(`div`, { children: [(0, h.jsx)(`span`, { className: `text-muted-foreground`, children: `Department:` }), ` `, n.department] }), (0, h.jsxs)(`div`, { children: [(0, h.jsx)(`span`, { className: `text-muted-foreground`, children: `Status:` }), ` `, n.status] }), (0, h.jsxs)(`div`, { children: [(0, h.jsx)(`span`, { className: `text-muted-foreground`, children: `Uploaded:` }), ` `, new Date(n.updatedAt).toLocaleString()] })] })] })] }) }) : (0, h.jsx)(`div`, { className: `p-10 text-red-500`, children: `File not found` }) }
+export { g as component };
