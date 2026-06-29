@@ -74,7 +74,7 @@ const submit = async () => {
   formData.append("file", file);
 
   try {
-    const response = await fetch("http://localhost:8000/api/files", {
+    const response = await fetch("${import.meta.env.VITE_API_URL}/api/files", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${session.token}`,
