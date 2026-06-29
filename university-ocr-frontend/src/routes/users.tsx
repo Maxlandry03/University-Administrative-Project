@@ -46,7 +46,7 @@ function UserManagementPage() {
       if (!session) return;
       try {
         const headers = { "Authorization": `Bearer ${session.token}`, "Accept": "application/json" };
-        const res = await fetch("http://localhost:8000/api/users", { headers });
+        const res = await fetch("${import.meta.env.VITE_API_URL}/api/users", { headers });
         const data = await res.json();
         if (res.ok && !ignore) setUsers(data);
         else toast.error("Failed to fetch users.");
@@ -61,7 +61,7 @@ function UserManagementPage() {
   const createUser = async (userData: any) => {
     if (!session?.token) return;
     try {
-      const response = await fetch(`http://localhost:8000/api/users`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.token}`,
@@ -88,7 +88,7 @@ function UserManagementPage() {
     if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/users/${email}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${email}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${session.token}`, 'Accept': 'application/json' }
       });
