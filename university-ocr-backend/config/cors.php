@@ -19,9 +19,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['university-administrative-project-dvmx-5p62fcudd.vercel.app'],
+    'allowed_origins' => ['https://university-administrative-project-dvmx-5p62fcudd.vercel.app'
+],
 
-    'allowed_origins_patterns' => ['#^'],
+    'allowed_origins_patterns' => [''],
 
     'allowed_headers' => ['*'],
 
