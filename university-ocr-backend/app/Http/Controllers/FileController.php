@@ -13,59 +13,21 @@ use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
-  public function index()
+ public function index()
 {
-    $user = Auth::user();
+    try {
 
-  
+        $files = \App\Models\File::all();
 
-    if ($user->role === 'Super Administrator') {
-        $files = File::all();
+        return response()->json($files);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            "message" => $e->getMessage()
+        ], 500);
+
     }
-    elseif ($user->role === 'Department Administrator') {
-
-    $files = File::where(
-        'destination_department',
-        $user->department
-    )->get();
-}
-
-  elseif ($user->role === 'student') {
-
-    \Log::info('Authenticated user', [
-        'user_id' => $user->id,
-        'email' => $user->email,
-    ]);
-
-    \Log::info('Student relation', [
-        'student' => $user->student,
-    ]);
-
-    $student = Student::where('email', $user->email)->first();
-
-    $files = $student
-        ? File::where('student_id', $student->student_id)->get()
-        : collect();
-}
-
-    else {
-        $files = collect();
-    }
-
-    return response()->json(
-    $files->map(function ($file) {
-        return [
-            'id' => $file->id,
-            'reference' => 'REF-' . str_pad($file->id, 6, '0', STR_PAD_LEFT),
-            'title' => $file->title,
-            'type' => pathinfo($file->file_path, PATHINFO_EXTENSION),
-            'department' => $file->destination_department,
-            'submittedBy' => optional($file->student)->name ?? $file->student_id,
-            'status' => strtolower($file->status),
-            'updatedAt' => $file->updated_at,
-        ];
-    })
-);
 }
 
    public function updateStatus(Request $request, $fileId)
