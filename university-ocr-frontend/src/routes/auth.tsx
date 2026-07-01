@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { setSession, type Role } from "@/lib/session";
-import api from "@/lib/apiConfig";
+import api from "@/lib/apiClient";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — OCR File Tracking" }] }),
@@ -58,10 +58,7 @@ function AuthPage() {
     "Login failed"
   );
 
-} catch (error) {
-      console.error("Login error:", error);
-      alert("An error occurred during login.");
-    }
+}
   };
 
   return (
