@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['university-administrative-project-g.vercel.app'],
+    'allowed_origins' => ['https://university-administrative-project-g.vercel.app'],
 
     'allowed_origins_patterns' => [''],
 
