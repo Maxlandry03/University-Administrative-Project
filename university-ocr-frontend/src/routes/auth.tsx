@@ -29,36 +29,41 @@ function AuthPage() {
       : { email, password, role };
 
     try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-  const response = await api.post("/login", payload);
+      if (!response.ok) {
+        const errorData = await response.json();
+        // You can use a toast notification here to show the error
+        alert(errorData.message || "Login failed");
+        return;
+      }
+const data = await response.json();
 
-  const data = response.data;
+console.log("Login response:", data);
 
-  console.log("Login response:", data);
+const { user, access_token, student_id } = data;
 
-  const { user, access_token, student_id } = data;
-
-  setSession({
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    department: user.department,
-    student_id: student_id,
-    token: access_token,
-  });
-
-  navigate({ to: "/dashboard" });
-
-} catch (error:any) {
-
-  console.error("Login error:", error);
-
-  alert(
-    error.response?.data?.message ||
-    "Login failed"
-  );
-
-}
+// Store the session and token
+setSession({
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  department: user.department,
+  student_id: student_id,
+  token: access_token,
+});
+      navigate({ to: "/dashboard" });
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login.");
+    }
   };
 
   return (
