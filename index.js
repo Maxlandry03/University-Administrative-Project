@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance with the correct base URL and settings
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8000/api', // The base URL for all API requests
+   baseURL: import.meta.env.VITE_API_URL,// The base URL for all API requests
     withCredentials: true, // This is crucial for sending cookies with requests
     headers: {
         'Accept': 'application/json', // This tells Laravel to expect a JSON response
