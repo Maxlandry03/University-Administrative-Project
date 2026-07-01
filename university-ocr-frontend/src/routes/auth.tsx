@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { setSession, type Role } from "@/lib/session";
+import api from "@/lib/apiConfig";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — OCR File Tracking" }] }),
@@ -28,38 +29,36 @@ function AuthPage() {
       : { email, password, role };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        // You can use a toast notification here to show the error
-        alert(errorData.message || "Login failed");
-        return;
-      }
-const data = await response.json();
+  const response = await api.post("/login", payload);
 
-console.log("Login response:", data);
+  const data = response.data;
 
-const { user, access_token, student_id } = data;
+  console.log("Login response:", data);
 
-// Store the session and token
-setSession({
-  name: user.name,
-  email: user.email,
-  role: user.role,
-  department: user.department,
-  student_id: student_id,
-  token: access_token,
-});
-      navigate({ to: "/dashboard" });
-    } catch (error) {
+  const { user, access_token, student_id } = data;
+
+  setSession({
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    department: user.department,
+    student_id: student_id,
+    token: access_token,
+  });
+
+  navigate({ to: "/dashboard" });
+
+} catch (error:any) {
+
+  console.error("Login error:", error);
+
+  alert(
+    error.response?.data?.message ||
+    "Login failed"
+  );
+
+} catch (error) {
       console.error("Login error:", error);
       alert("An error occurred during login.");
     }
