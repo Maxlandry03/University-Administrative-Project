@@ -92,6 +92,7 @@ function Dashboard() {
             setFiles(data);
         }).catch(() => {
             toast.error("Cannot load files");
+            setFiles([]);
         });
     }, [session]);
     if (!session) return null;
